@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Quadro Multiskill Sub - Chassi & Motor</title>
+
+<!-- Biblioteca para PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 20px;
+}
+
+.container {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input, button {
+    padding: 8px;
+    font-size: 14px;
+    margin: 5px 5px 5px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: center;
+}
+
+th {
+    background: #eee;
+}
+
+/* ===== TABELA COM CABEÇALHO FIXO ===== */
+.table-wrapper {
+    max-height: 60vh;        /* altura visível */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+}
+
+/* Cabeçalho fixo */
+#skillTable thead th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #eee;
+}
+
+/* Segunda linha do cabeçalho (por causa do rowspan) */
+#skillTable thead tr:nth-child(2) th {
+    top: 32px;               /* altura da primeira linha */
+    z-index: 2;
+}
+
+.func-name {
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Bolinhas */
+.skill {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+    border: 1px solid #555;
+}
+
+.red { background: #e74c3c; }
+.yellow { background: #f1c40f; }
+.green { background: #2ecc71; }
+.blue { background: #3498db; }
+
+.delete-btn {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 8px;
+    cursor: pointer;
+}
+
+.legend {
+    margin-top: 15px;
+}
+
+a {
+    display: inline-block;
+    padding: 8px 14px;
+    background-color: #3498db;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+margin-bottom:10px;
+
+}
+a:hover {
+    background-color: #2980b9;
+}
+
+.group-separator {
+    border-left: 3px solid #666 !important;
+	display:fixed;
+}
+
+/* Melhora contraste do cabeçalho */
+#skillTable thead th[colspan] {
+    background: #dfe6e9;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Quadro de Multiskill</h2>
+<a href="multiskillLinha.html">Linha</a>
+
+<div class="container" id="content">
+
+    <input type="text" id="employeeName" placeholder="Nome do funcionário">
+    <button onclick="addEmployee()">Adicionar</button>
+
+    <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" onkeyup="renderTable()">
+
+    <button onclick="exportJSON()">Exportar Backup</button>
+    <input type="file" accept=".json" onchange="importJSON(event)">
+
+    <button onclick="exportPDF()">Salvar em PDF</button>
+    <div class="legend">
+        <span><span class="skill red"></span> Não sabe</span>
+        <span><span class="skill yellow"></span> Em treinamento</span>
+        <span><span class="skill green"></span> Autônomo</span>
+        <span><span class="skill blue"></span> Padrinho</span>
+    </div>
+<div class="table-wrapper">
+    <table id="skillTable">
+        <thead>
+            <tr>
+                <th rowspan="2">Funcionário</th>
+                <th colspan="5">CHASSI</th>
+                <th colspan="5">MOTOR</th>
+		<th colspan="5">ARM</th>
+                <th rowspan="2">Ação</th>
+            </tr>
+          <tr>
+    <th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th>
+
+    <th class="group-separator">M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th>
+
+    <th class="group-separator">ARM1</th><th>ARM2</th><th>ARM3</th><th>ARM4</th><th>ARM5</th>
+</tr>
+        </thead>
+<tbody id="tableBody"></tbody>
+    </table>
+
+</div>
+</div>
+
+<script src="./script/script.js"></script>
+
+</body>
+</html>

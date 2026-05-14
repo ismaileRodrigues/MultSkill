@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Controle de Steps - Seção</title>
+
+<!-- PDF (opcional – pode remover se não usar) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 20px;
+}
+
+.container {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input, button {
+    padding: 8px;
+    font-size: 14px;
+    margin: 5px 5px 5px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: center;
+}
+
+th {
+    background: #eee;
+}
+
+/* ===== TABELA COM CABEÇALHO FIXO ===== */
+.table-wrapper {
+    max-height: 60vh;        /* altura visível */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+}
+
+/* Cabeçalho fixo */
+#skillTable thead th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #eee;
+}
+
+/* Segunda linha do cabeçalho (por causa do rowspan) */
+#skillTable thead tr:nth-child(2) th {
+    top: 32px;               /* altura da primeira linha */
+    z-index: 2;
+}
+
+.func-name {
+    text-align: left;
+    font-weight: bold;
+}
+
+.skill {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+    border: 1px solid #555;
+}
+
+.red { background: #e74c3c; }
+.yellow { background: #f1c40f; }
+.green { background: #2ecc71; }
+.blue { background: #3498db; }
+
+.delete-btn {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 8px;
+    cursor: pointer;
+}
+
+.legend {
+    margin-top: 15px;
+}
+a {
+    display: inline-block;
+    padding: 8px 14px;
+    background-color: #3498db; /* azul */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+margin-bottom:10px;
+}
+
+a:hover {
+    background-color: #2980b9; /* azul mais escuro */
+}
+
+
+
+</style>
+</head>
+
+<body>
+
+<h2>Controle de Steps – Linha Principal</h2>
+<a href="index.html">Sub</a>
+
+<div class="container" id="content">
+
+    <input type="text" id="employeeName" placeholder="Nome do funcionário">
+    <button onclick="addEmployee()">Adicionar</button>
+
+    <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" onkeyup="renderTable()">
+
+    <button onclick="exportJSON()">Exportar Backup</button>
+    <input type="file" accept=".json" onchange="importJSON(event)">
+
+    <button onclick="exportPDF()">Salvar em PDF</button>
+
+    <div class="legend">
+        <span><span class="skill red"></span> Não sabe</span>
+        <span><span class="skill yellow"></span> Em treinamento</span>
+        <span><span class="skill green"></span> Autônomo</span>
+        <span><span class="skill blue"></span> Padrinho</span>
+    </div>
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Funcionário</th>
+                <th>Step 1</th>
+                <th>Step 2</th>
+                <th>Step 3</th>
+                <th>Step 4</th>
+                <th>Step 5</th>
+                <th>Step 6</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const colors = ["red", "yellow", "green", "blue"];
+const STORAGE_KEY = "steps_secao";
+
+/* ================= STORAGE SEGURO ================= */
+let employees = [];
+
+try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    employees = Array.isArray(data) ? data : [];
+} catch {
+    employees = [];
+}
+
+/* ================= NORMALIZA ================= */
+function normalizeEmployee(emp) {
+    return {
+        name: emp?.name || "",
+        steps: Array.isArray(emp?.steps)
+            ? [...emp.steps, 0, 0, 0, 0, 0].slice(0, 6)
+            : Array(6).fill(0)
+    };
+}
+
+function saveStorage() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(employees));
+}
+
+/* ================= RENDER ================= */
+function renderTable() {
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+
+    const search = document.getElementById("searchEmployee").value.toLowerCase();
+
+    employees = employees.map(normalizeEmployee);
+
+    employees
+        .filter(e => e.name.toLowerCase().includes(search))
+        .forEach((emp, empIndex) => {
+
+            const tr = document.createElement("tr");
+
+            const tdName = document.createElement("td");
+            tdName.textContent = emp.name;
+            tdName.className = "func-name";
+            tr.appendChild(tdName);
+
+            emp.steps.forEach((_, stepIndex) => {
+                const td = document.createElement("td");
+                const div = document.createElement("div");
+
+                const level = emp.steps[stepIndex] ?? 0;
+                div.className = "skill " + (colors[level] || "red");
+
+                div.onclick = () => {
+                    emp.steps[stepIndex] = (emp.steps[stepIndex] + 1) % colors.length;
+                    saveStorage();
+                    renderTable();
+                };
+
+                td.appendChild(div);
+                tr.appendChild(td);
+            });
+
+            const tdDel = document.createElement("td");
+            const btn = document.createElement("button");
+            btn.textContent = "X";
+            btn.className = "delete-btn";
+            btn.onclick = () => {
+                employees.splice(empIndex, 1);
+                saveStorage();
+                renderTable();
+            };
+
+            tdDel.appendChild(btn);
+            tr.appendChild(tdDel);
+
+            tbody.appendChild(tr);
+        });
+}
+
+/* ================= ADD ================= */
+function addEmployee() {
+    const input = document.getElementById("employeeName");
+    const name = input.value.trim();
+    if (!name) return;
+
+    employees.push({
+        name,
+        steps: Array(6).fill(0)
+    });
+
+    input.value = "";
+    saveStorage();
+    renderTable();
+}
+
+/* ================= EXPORT JSON ================= */
+function exportJSON() {
+    const blob = new Blob(
+        [JSON.stringify(employees, null, 2)],
+        { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "steps_secao_backup.json";
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+/* ================= IMPORT JSON ================= */
+function importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (!Array.isArray(data)) throw "inválido";
+            employees = data.map(normalizeEmployee);
+            saveStorage();
+            renderTable();
+            alert("Backup carregado com sucesso!");
+        } catch {
+            alert("Arquivo JSON inválido");
+        }
+    };
+    reader.readAsText(file);
+}
+
+/* ================= PDF ================= */
+function exportPDF() {
+    if (typeof html2pdf === "undefined") {
+        alert("Biblioteca PDF não carregada.");
+        return;
+    }
+
+    html2pdf()
+        .set({
+            margin: 5,
+            filename: "controle_steps.pdf",
+            html2canvas: { scale: 1.5 },
+            jsPDF: { orientation: "landscape", unit: "mm", format: "a4" }
+        })
+        .from(document.getElementById("content"))
+        .save();
+}
+
+/* ================= INIT ================= */
+saveStorage();
+renderTable();
+</script>
+
+</body>
+</html>
