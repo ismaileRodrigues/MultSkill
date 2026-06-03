@@ -114,6 +114,23 @@ th, td {
     padding: 6px;
     cursor: pointer;
 }
+    .floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 15px;
+    background: #3498db;
+    color: white;
+    padding: 14px;
+    border-radius: 50px;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 999;
+}
+
+.floating-btn:hover {
+    background: #2980b9;
+}
 
 .legend {
     display: flex;
@@ -131,7 +148,9 @@ th, td {
 <body>
 
 <h2>Multiskill Sub Monatgens</h2>
-
+<a href="multiskillLinha.html" class="floating-btn">
+    📋 Linha
+</a>
 <div class="container" id="content">
 
 <input type="text" id="employeeName" placeholder="Nome do funcionário">
