@@ -2,8 +2,6 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Quadro Multiskill</title>
 
 <!-- PDF -->
@@ -17,9 +15,7 @@ body {
     margin: 0;
 }
 
-h2 {
-    text-align: center;
-}
+h2 { text-align: center; }
 
 .container {
     background: #fff;
@@ -27,7 +23,6 @@ h2 {
     border-radius: 8px;
 }
 
-/* inputs */
 input, button, a {
     padding: 10px;
     font-size: 16px;
@@ -37,9 +32,7 @@ input, button, a {
 }
 
 @media (min-width: 768px) {
-    input, button {
-        width: auto;
-    }
+    input, button { width: auto; }
 }
 
 a {
@@ -52,10 +45,9 @@ a {
     font-weight: bold;
 }
 
-/* tabela */
 .table-wrapper {
     width: 100%;
-    overflow: auto;
+    overflow-x: auto;
     max-height: 60vh;
     border: 1px solid #ccc;
 }
@@ -63,7 +55,7 @@ a {
 table {
     border-collapse: collapse;
     margin-top: 10px;
-    min-width: 1200px; /* aumentado */
+    min-width: 1200px;
 }
 
 th, td {
@@ -73,25 +65,18 @@ th, td {
     font-size: 12px;
 }
 
-/* sticky header */
-#skillTable thead th {
+thead th {
     position: sticky;
     top: 0;
-    z-index: 3;
     background: #eee;
+    z-index: 2;
 }
 
-#skillTable thead tr:nth-child(2) th {
-    top: 30px;
-}
-
-/* nome */
 .func-name {
     text-align: left;
     font-weight: bold;
 }
 
-/* bolinhas */
 .skill {
     width: 16px;
     height: 16px;
@@ -111,189 +96,162 @@ th, td {
     color: #fff;
     border: none;
     border-radius: 4px;
-    padding: 6px;
     cursor: pointer;
-}
-    .floating-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 15px;
-    background: #3498db;
-    color: white;
-    padding: 14px;
-    border-radius: 50px;
-    font-size: 14px;
-    text-decoration: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    z-index: 999;
-}
-
-.floating-btn:hover {
-    background: #2980b9;
-}
-
-.legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    font-size: 12px;
 }
 
 .group-separator {
     border-left: 3px solid #666 !important;
 }
+
+    a {
+    display: block;
+    text-align: center;
+    background-color: #3498db;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
 </style>
 </head>
 
 <body>
 
-<h2>Multiskill Sub Monatgens</h2>
-<a href="multiskillLinha.html" class="floating-btn">
-    📋 Linha
-</a>
+<h2>Multiskill Sub</h2>
+<a href="multiskillLinha.html">Linha</a>
 <div class="container" id="content">
 
 <input type="text" id="employeeName" placeholder="Nome do funcionário">
 <button onclick="addEmployee()">Adicionar</button>
 
-<input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" onkeyup="renderTable()">
+<input type="text" id="searchEmployee" placeholder="Pesquisar" onkeyup="renderTable()">
 
 <button onclick="exportJSON()">Exportar Backup</button>
 <input type="file" accept=".json" onchange="importJSON(event)">
 
 <button onclick="exportPDF()">Salvar em PDF</button>
 
-<div class="legend">
-    <span><span class="skill red"></span> Não sabe</span>
-    <span><span class="skill yellow"></span> Em treinamento</span>
-    <span><span class="skill green"></span> Autônomo</span>
-    <span><span class="skill blue"></span> Padrinho</span>
-</div>
-
 <div class="table-wrapper">
 <table id="skillTable">
 <thead>
-
 <tr>
-    <th rowspan="2">Funcionário</th>
-
-    <th colspan="5">CHASSI</th>
-    <th colspan="5">MOTOR</th>
-    <th colspan="5">ARM</th>
-    <th colspan="2">VALVULA</th>
-    <th colspan="2">RADIADOR</th>
-
-    <th rowspan="2">Ação</th>
+<th rowspan="2">Funcionário</th>
+<th colspan="5">CHASSI</th>
+<th colspan="5">MOTOR</th>
+<th colspan="5">ARM</th>
+<th colspan="2">VÁLVULA</th>
+<th colspan="2">RADIADOR</th>
+<th rowspan="2">Ação</th>
 </tr>
-
 <tr>
-    <!-- CHASSI -->
-    <th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th>
-
-    <!-- MOTOR -->
-    <th class="group-separator">M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th>
-
-    <!-- ARM -->
-    <th class="group-separator">ARM1</th><th>ARM2</th><th>ARM3</th><th>ARM4</th><th>ARM5</th>
-
-    <!-- VALVULA -->
-    <th class="group-separator">V1</th><th>V2</th>
-
-    <!-- RADIADOR -->
-    <th class="group-separator">R1</th><th>R2</th>
+<th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th>
+<th class="group-separator">M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th>
+<th class="group-separator">ARM1</th><th>ARM2</th><th>ARM3</th><th>ARM4</th><th>ARM5</th>
+<th class="group-separator">V1</th><th>V2</th>
+<th class="group-separator">R1</th><th>R2</th>
 </tr>
-
 </thead>
-
 <tbody id="tableBody"></tbody>
-
 </table>
 </div>
 </div>
 
-<!-- SCRIPT SIMPLES FUNCIONAL -->
 <script>
-let employees = [];
-const totalSkills = 19; // atualizado
+const SKILL_COUNT = 19; // 5+5+5+2+2
+let employees = JSON.parse(localStorage.getItem("multiskill")) || [];
 
 function addEmployee() {
-    const name = document.getElementById("employeeName").value;
+    const name = employeeName.value.trim();
     if (!name) return;
 
     employees.push({
-        name: name,
-        skills: Array(totalSkills).fill(0)
+        name,
+        skills: Array(SKILL_COUNT).fill(0)
     });
 
-    document.getElementById("employeeName").value = '';
+    employeeName.value = "";
+    save();
     renderTable();
-}
-
-function changeSkill(empIndex, skillIndex) {
-    employees[empIndex].skills[skillIndex]++;
-    if (employees[empIndex].skills[skillIndex] > 3) {
-        employees[empIndex].skills[skillIndex] = 0;
-    }
-    renderTable();
-}
-
-function getColor(value) {
-    return ['red', 'yellow', 'green', 'blue'][value];
 }
 
 function renderTable() {
-    const search = document.getElementById("searchEmployee").value.toLowerCase();
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = '';
+    const search = searchEmployee.value.toLowerCase();
+    tableBody.innerHTML = "";
 
-    employees.forEach((emp, i) => {
-        if (!emp.name.toLowerCase().includes(search)) return;
+    employees
+        .filter(e => e.name.toLowerCase().includes(search))
+        .forEach((emp, i) => {
+            const tr = document.createElement("tr");
 
-        let row = `<tr>
-            <td class="func-name">${emp.name}</td>`;
+            const tdName = document.createElement("td");
+            tdName.textContent = emp.name;
+            tdName.className = "func-name";
+            tr.appendChild(tdName);
 
-        emp.skills.forEach((skill, j) => {
-            row += `
-            <td>
-                <span class="skill ${getColor(skill)}"
-                onclick="changeSkill(${i}, ${j})"></span>
-            </td>`;
+            emp.skills.forEach((skill, idx) => {
+                const td = document.createElement("td");
+                if ([5,10,15,17].includes(idx)) td.classList.add("group-separator");
+
+                const dot = document.createElement("span");
+                dot.className = "skill " + getColor(skill);
+                dot.onclick = () => {
+                    emp.skills[idx] = (skill + 1) % 4;
+                    save();
+                    renderTable();
+                };
+
+                td.appendChild(dot);
+                tr.appendChild(td);
+            });
+
+            const tdDel = document.createElement("td");
+            const btn = document.createElement("button");
+            btn.textContent = "X";
+            btn.className = "delete-btn";
+            btn.onclick = () => {
+                employees.splice(i, 1);
+                save();
+                renderTable();
+            };
+            tdDel.appendChild(btn);
+            tr.appendChild(tdDel);
+
+            tableBody.appendChild(tr);
         });
-
-        row += `<td><button class="delete-btn" onclick="deleteEmployee(${i})">X</button></td></tr>`;
-
-        tbody.innerHTML += row;
-    });
 }
 
-function deleteEmployee(index) {
-    employees.splice(index, 1);
-    renderTable();
+function getColor(level) {
+    return ["red", "yellow", "green", "blue"][level];
+}
+
+function save() {
+    localStorage.setItem("multiskill", JSON.stringify(employees));
 }
 
 function exportJSON() {
-    const dataStr = JSON.stringify(employees);
-    const blob = new Blob([dataStr], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(employees)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "backup.json";
+    a.download = "multiskill.json";
     a.click();
 }
 
-function importJSON(event) {
-    const file = event.target.files[0];
+function importJSON(e) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-        employees = JSON.parse(e.target.result);
+    reader.onload = () => {
+        employees = JSON.parse(reader.result);
+        save();
         renderTable();
     };
-    reader.readAsText(file);
+    reader.readAsText(e.target.files[0]);
 }
 
 function exportPDF() {
-    const element = document.getElementById("content");
-    html2pdf().from(element).save("multiskill.pdf");
+    html2pdf().from(document.getElementById("content")).save("multiskill.pdf");
 }
+
+renderTable();
 </script>
 
 </body>
