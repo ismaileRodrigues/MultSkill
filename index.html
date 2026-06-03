@@ -4,18 +4,26 @@
 <meta charset="UTF-8">
 <title>Quadro Multiskill</title>
 
-<!-- PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial;
     background: #f4f6f8;
     padding: 10px;
-    margin: 0;
 }
 
 h2 { text-align: center; }
+
+a {
+    display: block;
+    text-align: center;
+    background: #3498db;
+    color: #fff;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+}
 
 .container {
     background: #fff;
@@ -23,38 +31,12 @@ h2 { text-align: center; }
     border-radius: 8px;
 }
 
-input, button, a {
-    padding: 10px;
-    font-size: 16px;
-    margin: 5px 0;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-@media (min-width: 768px) {
-    input, button { width: auto; }
-}
-
-a {
-    display: block;
-    text-align: center;
-    background-color: #3498db;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
 .table-wrapper {
-    width: 100%;
     overflow-x: auto;
-    max-height: 60vh;
-    border: 1px solid #ccc;
 }
 
 table {
     border-collapse: collapse;
-    margin-top: 10px;
     min-width: 1200px;
 }
 
@@ -62,19 +44,12 @@ th, td {
     border: 1px solid #ccc;
     padding: 6px;
     text-align: center;
-    font-size: 12px;
 }
 
 thead th {
     position: sticky;
     top: 0;
     background: #eee;
-    z-index: 2;
-}
-
-.func-name {
-    text-align: left;
-    font-weight: bold;
 }
 
 .skill {
@@ -91,49 +66,40 @@ thead th {
 .green { background: #2ecc71; }
 .blue { background: #3498db; }
 
-.delete-btn {
-    background: #e74c3c;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
 .group-separator {
     border-left: 3px solid #666 !important;
 }
 
-    a {
-    display: block;
-    text-align: center;
-    background-color: #3498db;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
 }
-
 </style>
 </head>
 
 <body>
 
-<h2>Multiskill Sub</h2>
+<h2>Quadro de Multiskill</h2>
+
 <a href="multiskillLinha.html">Linha</a>
+
 <div class="container" id="content">
 
-<input type="text" id="employeeName" placeholder="Nome do funcionário">
+<input type="text" id="employeeName" placeholder="Nome">
 <button onclick="addEmployee()">Adicionar</button>
 
 <input type="text" id="searchEmployee" placeholder="Pesquisar" onkeyup="renderTable()">
 
-<button onclick="exportJSON()">Exportar Backup</button>
-<input type="file" accept=".json" onchange="importJSON(event)">
+<button onclick="exportJSON()">Exportar</button>
+<input type="file" onchange="importJSON(event)">
 
-<button onclick="exportPDF()">Salvar em PDF</button>
+<button onclick="exportPDF()">PDF</button>
 
 <div class="table-wrapper">
-<table id="skillTable">
+<table>
 <thead>
 <tr>
 <th rowspan="2">Funcionário</th>
@@ -144,22 +110,38 @@ thead th {
 <th colspan="2">RADIADOR</th>
 <th rowspan="2">Ação</th>
 </tr>
+
 <tr>
 <th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th>
+
 <th class="group-separator">M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th>
+
 <th class="group-separator">ARM1</th><th>ARM2</th><th>ARM3</th><th>ARM4</th><th>ARM5</th>
+
 <th class="group-separator">V1</th><th>V2</th>
+
 <th class="group-separator">R1</th><th>R2</th>
 </tr>
 </thead>
+
 <tbody id="tableBody"></tbody>
 </table>
 </div>
 </div>
 
 <script>
-const SKILL_COUNT = 19; // 5+5+5+2+2
+const SKILL_COUNT = 19;
+
 let employees = JSON.parse(localStorage.getItem("multiskill")) || [];
+
+// ✅ CORREÇÃO: garante que todos tenham 19 skills
+employees = employees.map(emp => {
+    if (!emp.skills) emp.skills = [];
+    while (emp.skills.length < SKILL_COUNT) {
+        emp.skills.push(0);
+    }
+    return emp;
+});
 
 function addEmployee() {
     const name = employeeName.value.trim();
@@ -180,49 +162,56 @@ function renderTable() {
     tableBody.innerHTML = "";
 
     employees
-        .filter(e => e.name.toLowerCase().includes(search))
-        .forEach((emp, i) => {
-            const tr = document.createElement("tr");
+    .filter(e => e.name.toLowerCase().includes(search))
+    .forEach((emp, i) => {
 
-            const tdName = document.createElement("td");
-            tdName.textContent = emp.name;
-            tdName.className = "func-name";
-            tr.appendChild(tdName);
+        const tr = document.createElement("tr");
 
-            emp.skills.forEach((skill, idx) => {
-                const td = document.createElement("td");
-                if ([5,10,15,17].includes(idx)) td.classList.add("group-separator");
+        const tdName = document.createElement("td");
+        tdName.textContent = emp.name;
+        tr.appendChild(tdName);
 
-                const dot = document.createElement("span");
-                dot.className = "skill " + getColor(skill);
-                dot.onclick = () => {
-                    emp.skills[idx] = (skill + 1) % 4;
-                    save();
-                    renderTable();
-                };
+        emp.skills.forEach((skill, idx) => {
 
-                td.appendChild(dot);
-                tr.appendChild(td);
-            });
+            const td = document.createElement("td");
 
-            const tdDel = document.createElement("td");
-            const btn = document.createElement("button");
-            btn.textContent = "X";
-            btn.className = "delete-btn";
-            btn.onclick = () => {
-                employees.splice(i, 1);
+            if ([5,10,15,17].includes(idx)) {
+                td.classList.add("group-separator");
+            }
+
+            const dot = document.createElement("span");
+            dot.className = "skill " + getColor(skill);
+
+            dot.onclick = () => {
+                emp.skills[idx] = (emp.skills[idx] + 1) % 4;
                 save();
                 renderTable();
             };
-            tdDel.appendChild(btn);
-            tr.appendChild(tdDel);
 
-            tableBody.appendChild(tr);
+            td.appendChild(dot);
+            tr.appendChild(td);
         });
+
+        const tdDel = document.createElement("td");
+        const btn = document.createElement("button");
+        btn.textContent = "X";
+        btn.className = "delete-btn";
+
+        btn.onclick = () => {
+            employees.splice(i, 1);
+            save();
+            renderTable();
+        };
+
+        tdDel.appendChild(btn);
+        tr.appendChild(tdDel);
+
+        tableBody.appendChild(tr);
+    });
 }
 
 function getColor(level) {
-    return ["red", "yellow", "green", "blue"][level];
+    return ["red","yellow","green","blue"][level] || "red";
 }
 
 function save() {
@@ -230,10 +219,10 @@ function save() {
 }
 
 function exportJSON() {
-    const blob = new Blob([JSON.stringify(employees)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(employees)], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "multiskill.json";
+    a.download = "backup.json";
     a.click();
 }
 
@@ -241,6 +230,16 @@ function importJSON(e) {
     const reader = new FileReader();
     reader.onload = () => {
         employees = JSON.parse(reader.result);
+
+        // ✅ corrige também ao importar
+        employees = employees.map(emp => {
+            if (!emp.skills) emp.skills = [];
+            while (emp.skills.length < SKILL_COUNT) {
+                emp.skills.push(0);
+            }
+            return emp;
+        });
+
         save();
         renderTable();
     };
