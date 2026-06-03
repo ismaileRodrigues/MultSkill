@@ -2,9 +2,11 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Quadro Multiskill Sub - Chassi & Motor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Biblioteca para PDF -->
+<title>Quadro Multiskill</title>
+
+<!-- PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
@@ -25,7 +27,7 @@ h2 {
     border-radius: 8px;
 }
 
-/* INPUTS MOBILE */
+/* inputs */
 input, button, a {
     padding: 10px;
     font-size: 16px;
@@ -34,14 +36,12 @@ input, button, a {
     box-sizing: border-box;
 }
 
-/* agrupar inputs no desktop */
 @media (min-width: 768px) {
     input, button {
         width: auto;
     }
 }
 
-/* LINKS */
 a {
     display: block;
     text-align: center;
@@ -52,27 +52,20 @@ a {
     font-weight: bold;
 }
 
-a:hover {
-    background-color: #2980b9;
-}
-
-/* TABELA RESPONSIVA */
+/* tabela */
 .table-wrapper {
     width: 100%;
-    overflow-x: auto; /* <-- DESLIZA LATERAL */
-    overflow-y: auto;
+    overflow: auto;
     max-height: 60vh;
     border: 1px solid #ccc;
 }
 
-/* tabela maior que tela */
 table {
     border-collapse: collapse;
     margin-top: 10px;
-    min-width: 900px; /* força scroll horizontal */
+    min-width: 1200px; /* aumentado */
 }
 
-/* células */
 th, td {
     border: 1px solid #ccc;
     padding: 6px;
@@ -80,7 +73,7 @@ th, td {
     font-size: 12px;
 }
 
-/* cabeçalho fixo */
+/* sticky header */
 #skillTable thead th {
     position: sticky;
     top: 0;
@@ -90,17 +83,15 @@ th, td {
 
 #skillTable thead tr:nth-child(2) th {
     top: 30px;
-    z-index: 2;
 }
 
-/* nomes */
+/* nome */
 .func-name {
     text-align: left;
     font-weight: bold;
-    min-width: 120px;
 }
 
-/* bolinhas menores para celular */
+/* bolinhas */
 .skill {
     width: 16px;
     height: 16px;
@@ -110,13 +101,11 @@ th, td {
     border: 1px solid #555;
 }
 
-/* cores */
 .red { background: #e74c3c; }
 .yellow { background: #f1c40f; }
 .green { background: #2ecc71; }
 .blue { background: #3498db; }
 
-/* botão excluir */
 .delete-btn {
     background: #e74c3c;
     color: #fff;
@@ -126,7 +115,6 @@ th, td {
     cursor: pointer;
 }
 
-/* legenda */
 .legend {
     display: flex;
     flex-wrap: wrap;
@@ -134,21 +122,8 @@ th, td {
     font-size: 12px;
 }
 
-.legend span {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-/* separador */
 .group-separator {
     border-left: 3px solid #666 !important;
-}
-
-/* cabeçalho categorias */
-#skillTable thead th[colspan] {
-    background: #dfe6e9;
-    font-weight: bold;
 }
 </style>
 </head>
@@ -156,50 +131,151 @@ th, td {
 <body>
 
 <h2>Quadro de Multiskill</h2>
-<a href="multiskillLinha.html">Linha</a>
 
 <div class="container" id="content">
 
-    <input type="text" id="employeeName" placeholder="Nome do funcionário">
-    <button onclick="addEmployee()">Adicionar</button>
+<input type="text" id="employeeName" placeholder="Nome do funcionário">
+<button onclick="addEmployee()">Adicionar</button>
 
-    <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" onkeyup="renderTable()">
+<input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" onkeyup="renderTable()">
 
-    <button onclick="exportJSON()">Exportar Backup</button>
-    <input type="file" accept=".json" onchange="importJSON(event)">
+<button onclick="exportJSON()">Exportar Backup</button>
+<input type="file" accept=".json" onchange="importJSON(event)">
 
-    <button onclick="exportPDF()">Salvar em PDF</button>
-    <div class="legend">
-        <span><span class="skill red"></span> Não sabe</span>
-        <span><span class="skill yellow"></span> Em treinamento</span>
-        <span><span class="skill green"></span> Autônomo</span>
-        <span><span class="skill blue"></span> Padrinho</span>
-    </div>
+<button onclick="exportPDF()">Salvar em PDF</button>
+
+<div class="legend">
+    <span><span class="skill red"></span> Não sabe</span>
+    <span><span class="skill yellow"></span> Em treinamento</span>
+    <span><span class="skill green"></span> Autônomo</span>
+    <span><span class="skill blue"></span> Padrinho</span>
+</div>
+
 <div class="table-wrapper">
-    <table id="skillTable">
-        <thead>
-            <tr>
-                <th rowspan="2">Funcionário</th>
-                <th colspan="5">CHASSI</th>
-                <th colspan="5">MOTOR</th>
-		<th colspan="5">ARM</th>
-                <th rowspan="2">Ação</th>
-            </tr>
-          <tr>
+<table id="skillTable">
+<thead>
+
+<tr>
+    <th rowspan="2">Funcionário</th>
+
+    <th colspan="5">CHASSI</th>
+    <th colspan="5">MOTOR</th>
+    <th colspan="5">ARM</th>
+    <th colspan="2">VALVULA</th>
+    <th colspan="2">RADIADOR</th>
+
+    <th rowspan="2">Ação</th>
+</tr>
+
+<tr>
+    <!-- CHASSI -->
     <th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th>
 
+    <!-- MOTOR -->
     <th class="group-separator">M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th>
 
+    <!-- ARM -->
     <th class="group-separator">ARM1</th><th>ARM2</th><th>ARM3</th><th>ARM4</th><th>ARM5</th>
+
+    <!-- VALVULA -->
+    <th class="group-separator">V1</th><th>V2</th>
+
+    <!-- RADIADOR -->
+    <th class="group-separator">R1</th><th>R2</th>
 </tr>
-        </thead>
+
+</thead>
+
 <tbody id="tableBody"></tbody>
-    </table>
 
+</table>
 </div>
 </div>
 
-<script src="./script/script.js"></script>
+<!-- SCRIPT SIMPLES FUNCIONAL -->
+<script>
+let employees = [];
+const totalSkills = 19; // atualizado
+
+function addEmployee() {
+    const name = document.getElementById("employeeName").value;
+    if (!name) return;
+
+    employees.push({
+        name: name,
+        skills: Array(totalSkills).fill(0)
+    });
+
+    document.getElementById("employeeName").value = '';
+    renderTable();
+}
+
+function changeSkill(empIndex, skillIndex) {
+    employees[empIndex].skills[skillIndex]++;
+    if (employees[empIndex].skills[skillIndex] > 3) {
+        employees[empIndex].skills[skillIndex] = 0;
+    }
+    renderTable();
+}
+
+function getColor(value) {
+    return ['red', 'yellow', 'green', 'blue'][value];
+}
+
+function renderTable() {
+    const search = document.getElementById("searchEmployee").value.toLowerCase();
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = '';
+
+    employees.forEach((emp, i) => {
+        if (!emp.name.toLowerCase().includes(search)) return;
+
+        let row = `<tr>
+            <td class="func-name">${emp.name}</td>`;
+
+        emp.skills.forEach((skill, j) => {
+            row += `
+            <td>
+                <span class="skill ${getColor(skill)}"
+                onclick="changeSkill(${i}, ${j})"></span>
+            </td>`;
+        });
+
+        row += `<td><button class="delete-btn" onclick="deleteEmployee(${i})">X</button></td></tr>`;
+
+        tbody.innerHTML += row;
+    });
+}
+
+function deleteEmployee(index) {
+    employees.splice(index, 1);
+    renderTable();
+}
+
+function exportJSON() {
+    const dataStr = JSON.stringify(employees);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "backup.json";
+    a.click();
+}
+
+function importJSON(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        employees = JSON.parse(e.target.result);
+        renderTable();
+    };
+    reader.readAsText(file);
+}
+
+function exportPDF() {
+    const element = document.getElementById("content");
+    html2pdf().from(element).save("multiskill.pdf");
+}
+</script>
 
 </body>
 </html>
