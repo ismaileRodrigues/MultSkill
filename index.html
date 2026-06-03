@@ -10,6 +10,15 @@
 body {
     font-family: Arial;
     background: #f4f6f8;
+    margin: 0;
+}
+
+/* TOPO FIXO */
+.topo-fixo {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f4f6f8;
     padding: 10px;
 }
 
@@ -23,16 +32,19 @@ a {
     padding: 10px;
     text-decoration: none;
     border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 .container {
-    background: #fff;
+    background: white;
     padding: 10px;
     border-radius: 8px;
 }
 
+/* TABELA */
 .table-wrapper {
-    overflow-x: auto;
+    max-height: calc(100vh - 220px);
+    overflow: auto;
 }
 
 table {
@@ -46,21 +58,24 @@ th, td {
     text-align: center;
 }
 
+thead th {
+    background: #eee;
+}
+
+/* HEADER CONGELADO */
 #skillTable thead tr:first-child th {
     position: sticky;
     top: 0;
-    z-index: 3;
-    background: #eee;
+    z-index: 5;
 }
 
 #skillTable thead tr:nth-child(2) th {
     position: sticky;
-    top: 35px; /* ajuste fino se necessário */
-    z-index: 2;
-    background: #eee;
+    top: 35px;
+    z-index: 4;
 }
 
-
+/* SKILLS */
 .skill {
     width: 16px;
     height: 16px;
@@ -91,24 +106,31 @@ th, td {
 
 <body>
 
-<h2>Quadro de Multiskill</h2>
+<!-- ✅ TOPO CONGELADO -->
+<div class="topo-fixo">
 
-<a href="multiskillLinha.html">Linha</a>
+    <h2>Quadro de Multiskill</h2>
 
-<div class="container" id="content">
+    <a href="multiskillLinha.html">Linha</a>
 
-<input type="text" id="employeeName" placeholder="Nome">
-<button onclick="addEmployee()">Adicionar</button>
+    <div class="container">
+        <input type="text" id="employeeName" placeholder="Nome">
+        <button onclick="addEmployee()">Adicionar</button>
 
-<input type="text" id="searchEmployee" placeholder="Pesquisar" onkeyup="renderTable()">
+        <input type="text" id="searchEmployee" placeholder="Pesquisar" onkeyup="renderTable()">
 
-<button onclick="exportJSON()">Exportar</button>
-<input type="file" onchange="importJSON(event)">
+        <button onclick="exportJSON()">Exportar</button>
+        <input type="file" onchange="importJSON(event)">
 
-<button onclick="exportPDF()">PDF</button>
+        <button onclick="exportPDF()">PDF</button>
+    </div>
 
+</div>
+
+<!-- ✅ TABELA -->
 <div class="table-wrapper">
-<table>
+<table id="skillTable">
+
 <thead>
 <tr>
 <th rowspan="2">Funcionário</th>
@@ -134,8 +156,8 @@ th, td {
 </thead>
 
 <tbody id="tableBody"></tbody>
+
 </table>
-</div>
 </div>
 
 <script>
@@ -143,7 +165,7 @@ const SKILL_COUNT = 19;
 
 let employees = JSON.parse(localStorage.getItem("multiskill")) || [];
 
-// ✅ CORREÇÃO: garante que todos tenham 19 skills
+// ✅ Corrige dados antigos
 employees = employees.map(emp => {
     if (!emp.skills) emp.skills = [];
     while (emp.skills.length < SKILL_COUNT) {
@@ -203,6 +225,7 @@ function renderTable() {
 
         const tdDel = document.createElement("td");
         const btn = document.createElement("button");
+
         btn.textContent = "X";
         btn.className = "delete-btn";
 
@@ -237,10 +260,10 @@ function exportJSON() {
 
 function importJSON(e) {
     const reader = new FileReader();
+
     reader.onload = () => {
         employees = JSON.parse(reader.result);
 
-        // ✅ corrige também ao importar
         employees = employees.map(emp => {
             if (!emp.skills) emp.skills = [];
             while (emp.skills.length < SKILL_COUNT) {
@@ -252,11 +275,12 @@ function importJSON(e) {
         save();
         renderTable();
     };
+
     reader.readAsText(e.target.files[0]);
 }
 
 function exportPDF() {
-    html2pdf().from(document.getElementById("content")).save("multiskill.pdf");
+    html2pdf().from(document.body).save("multiskill.pdf");
 }
 
 renderTable();
