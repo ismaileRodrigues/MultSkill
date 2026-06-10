@@ -1,290 +1,1014 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Quadro Multiskill</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quadro Multiskill</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-<style>
-body {
-    font-family: Arial;
-    background: #f4f6f8;
-    margin: 0;
-}
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --border: #d9dee5;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #3498db;
+      --danger: #e74c3c;
+      --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 
-/* TOPO FIXO */
-.topo-fixo {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: #f4f6f8;
-    padding: 10px;
-}
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --green: #2ecc71;
+      --blue: #3498db;
+    }
 
-h2 { text-align: center; }
+    * {
+      box-sizing: border-box;
+    }
 
-a {
-    display: block;
-    text-align: center;
-    background: #3498db;
-    color: #fff;
-    padding: 10px;
-    text-decoration: none;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+    }
 
-.container {
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-}
+    .topo-fixo {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(244, 246, 248, 0.98);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px;
+    }
 
-/* TABELA */
-.table-wrapper {
-    max-height: calc(100vh - 220px);
-    overflow: auto;
-}
+    .unified-toolbar {
+      max-width: 100%;
+    }
 
-table {
-    border-collapse: collapse;
-    min-width: 1200px;
-}
+    .toolbar-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
 
-th, td {
-    border: 1px solid #ccc;
-    padding: 6px;
-    text-align: center;
-}
+    .toolbar-search-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
 
-thead th {
-    background: #eee;
-}
+    input[type="text"],
+    input[type="file"],
+    button {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      font-size: 15px;
+    }
 
-/* HEADER CONGELADO */
-#skillTable thead tr:first-child th {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-}
+    button {
+      background: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-#skillTable thead tr:nth-child(2) th {
-    position: sticky;
-    top: 30px;
-    z-index: 4;
-}
+    button:hover {
+      filter: brightness(0.98);
+    }
 
-/* SKILLS */
-.skill {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: inline-block;
-    cursor: pointer;
-    border: 1px solid #555;
-}
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
 
-.red { background: #e74c3c; }
-.yellow { background: #f1c40f; }
-.green { background: #2ecc71; }
-.blue { background: #3498db; }
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+    }
 
-.group-separator {
-    border-left: 3px solid #666 !important;
-}
+    .actions-btn {
+      width: auto;
+      min-width: 100px;
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
 
-.delete-btn {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px;
-    cursor: pointer;
-}
-</style>
+    .linha-link {
+      display: block;
+      text-align: center;
+      background: var(--primary);
+      color: #fff;
+      padding: 12px;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .content {
+      padding: 12px;
+    }
+
+    /* DESKTOP TABLE */
+    .desktop-view {
+      display: block;
+    }
+
+    .table-wrapper {
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: auto;
+      max-height: calc(100vh - 110px);
+    }
+
+    table {
+      border-collapse: collapse;
+      min-width: 1250px;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #dfe4ea;
+      padding: 8px 6px;
+      text-align: center;
+      white-space: nowrap;
+      background: #fff;
+    }
+
+    thead th {
+      background: #eef2f7;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    #skillTable thead tr:first-child th {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    #skillTable thead tr:nth-child(2) th {
+      position: sticky;
+      top: 38px;
+      z-index: 4;
+    }
+
+    .sticky-name {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      background: #fff;
+      text-align: left;
+      min-width: 180px;
+      font-weight: bold;
+    }
+
+    thead .sticky-name {
+      z-index: 6;
+      background: #eef2f7;
+    }
+
+    .sticky-action {
+      position: sticky;
+      right: 0;
+      z-index: 3;
+      background: #fff;
+      min-width: 90px;
+    }
+
+    thead .sticky-action {
+      z-index: 6;
+      background: #eef2f7;
+    }
+
+    .group-separator {
+      border-left: 3px solid #718096 !important;
+    }
+
+    .skill-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 0, 0, 0.22);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #111;
+      font-weight: bold;
+      background-clip: padding-box;
+    }
+
+    /* MOBILE CARDS */
+    .mobile-view {
+      display: none;
+    }
+
+    .cards {
+      display: grid;
+      gap: 12px;
+    }
+
+    .employee-card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+    }
+
+    .employee-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .employee-name {
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    .group-block {
+      border: 1px solid #ebeff4;
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 10px;
+      background: #fafbfd;
+    }
+
+    .group-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .skill-tile {
+      min-height: 64px;
+      border-radius: 14px;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      background: #fff;
+      padding: 8px 6px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      text-align: center;
+    }
+
+    .skill-code {
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .skill-level-text {
+      font-size: 11px;
+      line-height: 1.1;
+      color: #111827;
+      font-weight: bold;
+    }
+
+    /* COLORS */
+    .red { background: var(--red); color: #fff; }
+    .yellow { background: var(--yellow); color: #111; }
+    .green { background: var(--green); color: #fff; }
+    .blue { background: var(--blue); color: #fff; }
+
+    /* MODAIS */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 999;
+      padding: 12px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 520px;
+      background: #fff;
+      border-radius: 18px 18px 0 0;
+      padding: 16px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .modal-subtitle {
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .level-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .level-option {
+      min-height: 62px;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      margin-top: 12px;
+    }
+
+    .close-btn {
+      background: #f3f4f6;
+    }
+
+    .small-muted {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .actions-sheet-content {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sheet-section {
+      border: 1px solid #eceff3;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fafbfd;
+    }
+
+    .sheet-section-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      display: inline-block;
+    }
+
+    @media (max-width: 900px) {
+      .desktop-view {
+        display: none;
+      }
+
+      .mobile-view {
+        display: block;
+      }
+
+      .content {
+        padding-top: 10px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .toolbar-title {
+        font-size: 18px;
+      }
+
+      .actions-btn {
+        min-width: 88px;
+      }
+
+      .content {
+        padding: 10px;
+      }
+
+      .skills-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .skill-tile {
+        min-height: 72px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="topo-fixo">
+    <div class="unified-toolbar">
+      <div class="toolbar-title">Multiskill Sub</div>
 
-<!-- ✅ TOPO CONGELADO -->
-<div class="topo-fixo">
+      <div class="toolbar-search-actions">
+        <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" />
+        <button class="actions-btn" onclick="openActionsSheet()">Ações</button>
+      </div>
+    </div>
+  </div>
 
-    <h2>Multiskill Sub</h2>
-
-    <a href="multiskillLinha.html">Linha</a>
-
-    <div class="container">
-        <input type="text" id="employeeName" placeholder="Nome">
-        <button onclick="addEmployee()">Adicionar</button>
-
-        <input type="text" id="searchEmployee" placeholder="Pesquisar" onkeyup="renderTable()">
-
-        <button onclick="exportJSON()">Exportar</button>
-        <input type="file" onchange="importJSON(event)">
-
-        <button onclick="exportPDF()">PDF</button>
+  <div class="content">
+    <!-- DESKTOP -->
+    <div class="desktop-view">
+      <div class="table-wrapper">
+        <table id="skillTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
     </div>
 
-</div>
+    <!-- MOBILE -->
+    <div class="mobile-view">
+      <div id="mobileList" class="cards"></div>
+    </div>
+  </div>
 
-<!-- ✅ TABELA -->
-<div class="table-wrapper">
-<table id="skillTable">
+  <!-- MODAL DE NÍVEL -->
+  <div id="levelModal" class="modal-overlay" onclick="closeLevelPicker(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title" id="modalTitle">Selecionar nível</div>
+      <div class="modal-subtitle" id="modalSubtitle">Escolha o nível da skill</div>
 
-<thead>
-<tr>
-<th rowspan="2">Funcionário</th>
-<th colspan="5">CHASSI</th>
-<th colspan="5">MOTOR</th>
-<th colspan="5">ARM</th>
-<th colspan="2">VÁLVULA</th>
-<th colspan="2">RADIADOR</th>
-<th rowspan="2">Ação</th>
-</tr>
+      <div class="level-options" id="levelOptions"></div>
 
-<tr>
-<th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th>
+      <div class="modal-footer">
+        <button class="close-btn" onclick="forceCloseLevelPicker()">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
-<th class="group-separator">M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th>
+  <!-- MODAL DE AÇÕES -->
+  <div id="actionsSheet" class="modal-overlay" onclick="closeActionsSheet(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title">Ações</div>
+      <div class="modal-subtitle">Adicionar funcionário, importar/exportar e acessar outras opções</div>
 
-<th class="group-separator">ARM1</th><th>ARM2</th><th>ARM3</th><th>ARM4</th><th>ARM5</th>
+      <div class="actions-sheet-content">
+        <div class="sheet-section">
+          <div class="sheet-section-title">Adicionar funcionário</div>
+          <div style="display:grid; gap:8px;">
+            <input type="text" id="employeeName" placeholder="Nome do funcionário" />
+            <button class="btn-primary" onclick="addEmployee()">Adicionar</button>
+          </div>
+        </div>
 
-<th class="group-separator">V1</th><th>V2</th>
+        <div class="sheet-section">
+          <div class="sheet-section-title">Arquivos</div>
+          <div style="display:grid; gap:8px;">
+            <button onclick="exportJSON()">Exportar JSON</button>
+            <label style="display:flex;align-items:center;">
+              <input type="file" onchange="importJSON(event)" style="padding:8px;" />
+            </label>
+            <button onclick="exportPDF()">Exportar PDF</button>
+          </div>
+        </div>
 
-<th class="group-separator">R1</th><th>R2</th>
-</tr>
-</thead>
+        <div class="sheet-section">
+          <div class="sheet-section-title">Navegação</div>
+          <div style="display:grid; gap:8px;">
+            <a class="linha-link" href="multiskillLinha.html">Linha</a>
+            <button onclick="clearSearch()">Limpar pesquisa</button>
+          </div>
+        </div>
 
-<tbody id="tableBody"></tbody>
+        <div class="sheet-section">
+          <div class="sheet-section-title">Legenda</div>
+          <div class="legend">
+            <div class="legend-item"><span class="legend-dot red"></span> Nível 0</div>
+            <div class="legend-item"><span class="legend-dot yellow"></span> Nível 1</div>
+            <div class="legend-item"><span class="legend-dot green"></span> Nível 2</div>
+            <div class="legend-item"><span class="legend-dot blue"></span> Nível 3</div>
+          </div>
+        </div>
+      </div>
 
-</table>
-</div>
+      <div class="modal-footer">
+        <button class="close-btn" onclick="forceCloseActionsSheet()">Fechar</button>
+      </div>
+    </div>
+  </div>
 
-<script>
-const SKILL_COUNT = 19;
+  <script>
+    const SKILL_GROUPS = [
+      { name: "CHASSI", items: ["C1", "C2", "C3", "C4", "C5"] },
+      { name: "MOTOR", items: ["M1", "M2", "M3", "M4", "M5"] },
+      { name: "ARM", items: ["ARM1", "ARM2", "ARM3", "ARM4", "ARM5"] },
+      { name: "VÁLVULA", items: ["V1", "V2"] },
+      { name: "RADIADOR", items: ["R1", "R2"] }
+    ];
 
-let employees = JSON.parse(localStorage.getItem("multiskill")) || [];
+    const SKILL_LABELS = SKILL_GROUPS.flatMap(group => group.items);
+    const SKILL_COUNT = SKILL_LABELS.length;
 
-// ✅ Corrige dados antigos
-employees = employees.map(emp => {
-    if (!emp.skills) emp.skills = [];
-    while (emp.skills.length < SKILL_COUNT) {
-        emp.skills.push(0);
+    const LEVELS = [
+      { className: "red", text: "Nível 0" },
+      { className: "yellow", text: "Nível 1" },
+      { className: "green", text: "Nível 2" },
+      { className: "blue", text: "Nível 3" }
+    ];
+
+    const employeeNameInput = document.getElementById("employeeName");
+    const searchInput = document.getElementById("searchEmployee");
+
+    const tableHead = document.getElementById("tableHead");
+    const tableBody = document.getElementById("tableBody");
+    const mobileList = document.getElementById("mobileList");
+
+    const levelModal = document.getElementById("levelModal");
+    const levelOptions = document.getElementById("levelOptions");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalSubtitle = document.getElementById("modalSubtitle");
+
+    const actionsSheet = document.getElementById("actionsSheet");
+
+    let selectedSkill = null;
+
+    let employees = JSON.parse(localStorage.getItem("multiskill")) || [];
+    employees = normalizeEmployees(employees);
+
+    function normalizeEmployees(list) {
+      if (!Array.isArray(list)) return [];
+
+      return list.map(emp => {
+        const normalized = {
+          name: emp?.name || "",
+          skills: Array.isArray(emp?.skills) ? [...emp.skills] : []
+        };
+
+        while (normalized.skills.length < SKILL_COUNT) {
+          normalized.skills.push(0);
+        }
+
+        normalized.skills = normalized.skills.slice(0, SKILL_COUNT).map(v => {
+          const n = Number(v);
+          return Number.isInteger(n) && n >= 0 && n <= 3 ? n : 0;
+        });
+
+        return normalized;
+      });
     }
-    return emp;
-});
 
-function addEmployee() {
-    const name = employeeName.value.trim();
-    if (!name) return;
+    function save() {
+      localStorage.setItem("multiskill", JSON.stringify(employees));
+    }
 
-    employees.push({
+    function getSearchValue() {
+      return (searchInput?.value || "").trim().toLowerCase();
+    }
+
+    function clearSearch() {
+      if (searchInput) searchInput.value = "";
+      renderAll();
+    }
+
+    function addEmployee() {
+      const name = employeeNameInput.value.trim();
+
+      if (!name) return;
+
+      employees.push({
         name,
         skills: Array(SKILL_COUNT).fill(0)
-    });
+      });
 
-    employeeName.value = "";
-    save();
-    renderTable();
-}
+      employeeNameInput.value = "";
+      save();
+      renderAll();
+      forceCloseActionsSheet();
+    }
 
-function renderTable() {
-    const search = searchEmployee.value.toLowerCase();
-    tableBody.innerHTML = "";
+    function getFilteredEmployees() {
+      const search = getSearchValue();
 
-    employees
-    .filter(e => e.name.toLowerCase().includes(search))
-    .forEach((emp, i) => {
+      return employees
+        .map((emp, index) => ({ emp, index }))
+        .filter(item => item.emp.name.toLowerCase().includes(search));
+    }
 
+    function getLevelData(level) {
+      return LEVELS[level] || LEVELS[0];
+    }
+
+    function buildTableHead() {
+      let firstRow = `
+        <tr>
+          <th rowspan="2" class="sticky-name">Funcionário</th>
+      `;
+
+      SKILL_GROUPS.forEach(group => {
+        firstRow += `<th colspan="${group.items.length}">${group.name}</th>`;
+      });
+
+      firstRow += `<th rowspan="2" class="sticky-action">Ação</th></tr>`;
+
+      let secondRow = `<tr>`;
+
+      SKILL_GROUPS.forEach((group, groupIndex) => {
+        group.items.forEach((item, itemIndex) => {
+          const hasSeparator = groupIndex > 0 && itemIndex === 0 ? "group-separator" : "";
+          secondRow += `<th class="${hasSeparator}">${item}</th>`;
+        });
+      });
+
+      secondRow += `</tr>`;
+      tableHead.innerHTML = firstRow + secondRow;
+    }
+
+    function renderTable() {
+      const filtered = getFilteredEmployees();
+      tableBody.innerHTML = "";
+
+      filtered.forEach(({ emp, index: employeeIndex }) => {
         const tr = document.createElement("tr");
 
         const tdName = document.createElement("td");
+        tdName.className = "sticky-name";
         tdName.textContent = emp.name;
         tr.appendChild(tdName);
 
-        emp.skills.forEach((skill, idx) => {
+        emp.skills.forEach((skill, skillIndex) => {
+          const td = document.createElement("td");
 
-            const td = document.createElement("td");
+          if (isGroupStart(skillIndex)) {
+            td.classList.add("group-separator");
+          }
 
-            if ([5,10,15,17].includes(idx)) {
-                td.classList.add("group-separator");
-            }
+          const btn = document.createElement("button");
+          const levelData = getLevelData(skill);
 
-            const dot = document.createElement("span");
-            dot.className = "skill " + getColor(skill);
+          btn.className = `skill-circle ${levelData.className}`;
+          btn.title = `${SKILL_LABELS[skillIndex]} - ${levelData.text}`;
+          btn.textContent = skill;
+          btn.onclick = () => openLevelPicker(employeeIndex, skillIndex);
 
-            dot.onclick = () => {
-                emp.skills[idx] = (emp.skills[idx] + 1) % 4;
-                save();
-                renderTable();
-            };
-
-            td.appendChild(dot);
-            tr.appendChild(td);
+          td.appendChild(btn);
+          tr.appendChild(td);
         });
 
-        const tdDel = document.createElement("td");
-        const btn = document.createElement("button");
+        const tdAction = document.createElement("td");
+        tdAction.className = "sticky-action";
 
-        btn.textContent = "X";
-        btn.className = "delete-btn";
-
-        btn.onclick = () => {
-            employees.splice(i, 1);
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn-danger";
+        deleteBtn.textContent = "Excluir";
+        deleteBtn.onclick = () => {
+          if (confirm(`Deseja excluir ${emp.name}?`)) {
+            employees.splice(employeeIndex, 1);
             save();
-            renderTable();
+            renderAll();
+          }
         };
 
-        tdDel.appendChild(btn);
-        tr.appendChild(tdDel);
+        tdAction.appendChild(deleteBtn);
+        tr.appendChild(tdAction);
 
         tableBody.appendChild(tr);
-    });
-}
+      });
+    }
 
-function getColor(level) {
-    return ["red","yellow","green","blue"][level] || "red";
-}
+    function renderMobileCards() {
+      const filtered = getFilteredEmployees();
+      mobileList.innerHTML = "";
 
-function save() {
-    localStorage.setItem("multiskill", JSON.stringify(employees));
-}
+      if (filtered.length === 0) {
+        mobileList.innerHTML = `
+          <div class="employee-card">
+            <div class="employee-name">Nenhum funcionário encontrado.</div>
+          </div>
+        `;
+        return;
+      }
 
-function exportJSON() {
-    const blob = new Blob([JSON.stringify(employees)], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "backup.json";
-    a.click();
-}
+      filtered.forEach(({ emp, index: employeeIndex }) => {
+        const card = document.createElement("div");
+        card.className = "employee-card";
 
-function importJSON(e) {
-    const reader = new FileReader();
+        card.innerHTML = `
+          <div class="employee-header">
+            <div>
+              <div class="employee-name">${escapeHtml(emp.name)}</div>
+              <div class="small-muted">Toque em uma skill para alterar o nível</div>
+            </div>
+            <button class="btn-danger" style="width:auto;" onclick="deleteEmployee(${employeeIndex})">Excluir</button>
+          </div>
+        `;
 
-    reader.onload = () => {
-        employees = JSON.parse(reader.result);
+        let currentIndex = 0;
 
-        employees = employees.map(emp => {
-            if (!emp.skills) emp.skills = [];
-            while (emp.skills.length < SKILL_COUNT) {
-                emp.skills.push(0);
-            }
-            return emp;
+        SKILL_GROUPS.forEach(group => {
+          const groupBlock = document.createElement("div");
+          groupBlock.className = "group-block";
+
+          const title = document.createElement("div");
+          title.className = "group-title";
+          title.textContent = group.name;
+          groupBlock.appendChild(title);
+
+          const grid = document.createElement("div");
+          grid.className = "skills-grid";
+
+          group.items.forEach(item => {
+            const skillLevel = emp.skills[currentIndex];
+            const levelData = getLevelData(skillLevel);
+
+            const tile = document.createElement("button");
+            tile.className = `skill-tile ${levelData.className}`;
+            tile.innerHTML = `
+              <div class="skill-code">${item}</div>
+              <div class="skill-level-text">${levelData.text}</div>
+            `;
+            tile.onclick = () => openLevelPicker(employeeIndex, currentIndex);
+
+            grid.appendChild(tile);
+            currentIndex++;
+          });
+
+          groupBlock.appendChild(grid);
+          card.appendChild(groupBlock);
         });
 
+        mobileList.appendChild(card);
+      });
+    }
+
+    function deleteEmployee(employeeIndex) {
+      const emp = employees[employeeIndex];
+      if (!emp) return;
+
+      if (confirm(`Deseja excluir ${emp.name}?`)) {
+        employees.splice(employeeIndex, 1);
         save();
-        renderTable();
-    };
+        renderAll();
+      }
+    }
 
-    reader.readAsText(e.target.files[0]);
-}
+    function isGroupStart(skillIndex) {
+      const starts = [];
+      let acc = 0;
 
-function exportPDF() {
-    html2pdf().from(document.body).save("multiskill.pdf");
-}
+      SKILL_GROUPS.forEach((group, index) => {
+        if (index > 0) starts.push(acc);
+        acc += group.items.length;
+      });
 
-renderTable();
-</script>
+      return starts.includes(skillIndex);
+    }
 
+    function openLevelPicker(employeeIndex, skillIndex) {
+      selectedSkill = { employeeIndex, skillIndex };
+
+      const employee = employees[employeeIndex];
+      if (!employee) return;
+
+      modalTitle.textContent = `${employee.name} • ${SKILL_LABELS[skillIndex]}`;
+      modalSubtitle.textContent = "Escolha o novo nível da skill";
+
+      levelOptions.innerHTML = "";
+
+      LEVELS.forEach((level, idx) => {
+        const btn = document.createElement("button");
+        btn.className = `level-option ${level.className}`;
+        btn.textContent = level.text;
+        btn.onclick = () => setSkillLevel(idx);
+        levelOptions.appendChild(btn);
+      });
+
+      levelModal.classList.add("show");
+    }
+
+    function setSkillLevel(level) {
+      if (!selectedSkill) return;
+
+      const { employeeIndex, skillIndex } = selectedSkill;
+      if (!employees[employeeIndex]) return;
+
+      employees[employeeIndex].skills[skillIndex] = level;
+      save();
+      renderAll();
+      forceCloseLevelPicker();
+    }
+
+    function closeLevelPicker(event) {
+      if (event.target === levelModal) {
+        forceCloseLevelPicker();
+      }
+    }
+
+    function forceCloseLevelPicker() {
+      selectedSkill = null;
+      levelModal.classList.remove("show");
+    }
+
+    function openActionsSheet() {
+      actionsSheet.classList.add("show");
+    }
+
+    function closeActionsSheet(event) {
+      if (event.target === actionsSheet) {
+        forceCloseActionsSheet();
+      }
+    }
+
+    function forceCloseActionsSheet() {
+      actionsSheet.classList.remove("show");
+    }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(employees, null, 2)], {
+        type: "application/json"
+      });
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "backup-multiskill.json";
+      a.click();
+
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(reader.result);
+          employees = normalizeEmployees(imported);
+          save();
+          renderAll();
+          alert("Importação realizada com sucesso!");
+          forceCloseActionsSheet();
+        } catch (error) {
+          alert("Arquivo inválido.");
+          console.error(error);
+        } finally {
+          event.target.value = "";
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    function exportPDF() {
+      const container = document.createElement("div");
+
+      container.innerHTML = `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2 style="text-align:center; margin-bottom:20px;">Multiskill Sub</h2>
+          ${buildPdfTable()}
+        </div>
+      `;
+
+      const options = {
+        margin: 0.4,
+        filename: "multiskill.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "in", format: "a3", orientation: "landscape" }
+      };
+
+      html2pdf().set(options).from(container).save();
+    }
+
+    function buildPdfTable() {
+      let html = `
+        <table style="width:100%; border-collapse:collapse; font-size:10px;">
+          <thead>
+            <tr>
+              <th rowspan="2" style="border:1px solid #ccc; padding:6px; background:#eee;">Funcionário</th>
+      `;
+
+      SKILL_GROUPS.forEach(group => {
+        html += `<th colspan="${group.items.length}" style="border:1px solid #ccc; padding:6px; background:#eee;">${group.name}</th>`;
+      });
+
+      html += `
+              <th rowspan="2" style="border:1px solid #ccc; padding:6px; background:#eee;">Ação</th>
+            </tr>
+            <tr>
+      `;
+
+      SKILL_GROUPS.forEach(group => {
+        group.items.forEach(item => {
+          html += `<th style="border:1px solid #ccc; padding:6px; background:#f8f8f8;">${item}</th>`;
+        });
+      });
+
+      html += `</tr></thead><tbody>`;
+
+      employees.forEach(emp => {
+        html += `<tr>`;
+        html += `<td style="border:1px solid #ccc; padding:6px;">${escapeHtml(emp.name)}</td>`;
+
+        emp.skills.forEach(level => {
+          const color = getPdfColor(level);
+          html += `
+            <td style="border:1px solid #ccc; padding:6px; text-align:center;">
+              <span style="
+                display:inline-block;
+                width:16px;
+                height:16px;
+                border-radius:50%;
+                background:${color};
+                border:1px solid #555;
+              "></span>
+            </td>
+          `;
+        });
+
+        html += `<td style="border:1px solid #ccc; padding:6px;">-</td>`;
+        html += `</tr>`;
+      });
+
+      html += `</tbody></table>`;
+      return html;
+    }
+
+    function getPdfColor(level) {
+      return ["#e74c3c", "#f1c40f", "#2ecc71", "#3498db"][level] || "#e74c3c";
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderAll() {
+      renderTable();
+      renderMobileCards();
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", renderAll);
+    }
+
+    if (employeeNameInput) {
+      employeeNameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addEmployee();
+      });
+    }
+
+    buildTableHead();
+    renderAll();
+  </script>
 </body>
 </html>
