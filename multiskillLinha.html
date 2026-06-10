@@ -1,342 +1,957 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Controle de Steps - Seção</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Steps - Seção</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    padding: 10px;
-    margin: 0;
-}
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --border: #d9dee5;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #3498db;
+      --danger: #e74c3c;
+      --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 
-.container {
-    background: #fff;
-    padding: 10px;
-    border-radius: 8px;
-}
-
-/* INPUTS MOBILE */
-input, button, a {
-    padding: 10px;
-    font-size: 16px;
-    margin: 5px 0;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* desktop volta ao normal */
-@media (min-width: 768px) {
-    input, button {
-        width: auto;
+      --red: #e74c3c;
+      --yellow: #f1c40f;
+      --green: #2ecc71;
+      --blue: #3498db;
     }
-}
 
-/* ===== ÁREA DA TABELA ===== */
-.table-wrapper {
-    width: 100%;
-    max-height: 65vh;
-    overflow: auto; /* ativa scroll horizontal e vertical */
-    border: 1px solid #ccc;
-    position: relative;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-/* ===== TABELA ===== */
-#skillTable {
-    border-collapse: separate;
-    border-spacing: 0;
-    min-width: 900px; /* força scroll lateral no celular */
-}
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      color: var(--text);
+    }
 
-/* células menores no mobile */
-th, td {
-    border: 1px solid #ccc;
-    padding: 6px;
-    text-align: center;
-    font-size: 12px;
-}
+    .topo-fixo {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(244, 246, 248, 0.98);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px;
+    }
 
-/* ===== CABEÇALHO FIXO ===== */
-#skillTable thead th {
-    position: sticky;
-    top: 0;
-    background: #eee;
-    z-index: 5;
-    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
-}
+    .toolbar-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
 
-/* ===== PRIMEIRA COLUNA FIXA ===== */
-#skillTable td:first-child,
-#skillTable th:first-child {
-    position: sticky;
-    left: 0;
-    background: #fff;
-    z-index: 4;
-    min-width: 120px;
-}
+    .toolbar-search-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
 
-/* cabeçalho primeira coluna */
-#skillTable th:first-child {
-    z-index: 6;
-    background: #eee;
-}
+    input[type="text"],
+    input[type="file"],
+    button {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      font-size: 15px;
+    }
 
-/* nome funcionário */
-.func-name {
-    text-align: left;
-    font-weight: bold;
-}
+    button {
+      background: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-/* ===== BOLINHAS (TOQUE MELHOR) ===== */
-.skill {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: inline-block;
-    cursor: pointer;
-    border: 1px solid #555;
-}
+    button:hover {
+      filter: brightness(0.98);
+    }
 
-/* cores */
-.red { background: #e74c3c; }
-.yellow { background: #f1c40f; }
-.green { background: #2ecc71; }
-.blue { background: #3498db; }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
 
-/* botão excluir maior p/ dedo */
-.delete-btn {
-    background: #e74c3c;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 8px;
-    cursor: pointer;
-}
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+    }
 
-/* legenda organizada */
-.legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    font-size: 12px;
-}
+    .actions-btn {
+      width: auto;
+      min-width: 100px;
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
 
-/* botão link */
-a {
-    display: block;
-    text-align: center;
-    background-color: #3498db;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-}
+    .nav-link {
+      display: block;
+      text-align: center;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      padding: 12px;
+    }
 
-a:hover {
-    background-color: #2980b9;
-}
-</style>
+    .content {
+      padding: 12px;
+    }
+
+    /* DESKTOP TABLE */
+    .desktop-view {
+      display: block;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      max-height: calc(100vh - 110px);
+      overflow: auto;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      background: var(--card);
+    }
+
+    #skillTable {
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 900px;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid #dfe4ea;
+      padding: 8px 6px;
+      text-align: center;
+      font-size: 12px;
+      white-space: nowrap;
+      background: #fff;
+    }
+
+    #skillTable thead th {
+      position: sticky;
+      top: 0;
+      background: #eef2f7;
+      z-index: 5;
+      box-shadow: 0 2px 2px rgba(0, 0, 0, 0.06);
+      font-weight: bold;
+    }
+
+    #skillTable td:first-child,
+    #skillTable th:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 4;
+      min-width: 160px;
+      text-align: left;
+      font-weight: bold;
+      background: #fff;
+    }
+
+    #skillTable th:first-child {
+      z-index: 6;
+      background: #eef2f7;
+    }
+
+    .sticky-action {
+      position: sticky;
+      right: 0;
+      z-index: 4;
+      min-width: 90px;
+      background: #fff;
+    }
+
+    thead .sticky-action {
+      z-index: 6;
+      background: #eef2f7;
+      text-align: center !important;
+    }
+
+    .func-name {
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .skill-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 2px solid rgba(0, 0, 0, 0.22);
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    /* MOBILE CARDS */
+    .mobile-view {
+      display: none;
+    }
+
+    .cards {
+      display: grid;
+      gap: 12px;
+    }
+
+    .employee-card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+    }
+
+    .employee-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .employee-name {
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    .steps-block {
+      border: 1px solid #ebeff4;
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 10px;
+      background: #fafbfd;
+    }
+
+    .steps-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .step-tile {
+      min-height: 72px;
+      border-radius: 14px;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      background: #fff;
+      padding: 8px 6px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      text-align: center;
+    }
+
+    .step-code {
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .step-level-text {
+      font-size: 11px;
+      line-height: 1.1;
+      color: #111827;
+      font-weight: bold;
+    }
+
+    /* COLORS */
+    .red { background: var(--red); color: #fff; }
+    .yellow { background: var(--yellow); color: #111; }
+    .green { background: var(--green); color: #fff; }
+    .blue { background: var(--blue); color: #fff; }
+
+    /* MODAIS */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 999;
+      padding: 12px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 520px;
+      background: #fff;
+      border-radius: 18px 18px 0 0;
+      padding: 16px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .modal-subtitle {
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .level-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .level-option {
+      min-height: 62px;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      margin-top: 12px;
+    }
+
+    .close-btn {
+      background: #f3f4f6;
+    }
+
+    .small-muted {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .actions-sheet-content {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sheet-section {
+      border: 1px solid #eceff3;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fafbfd;
+    }
+
+    .sheet-section-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      display: inline-block;
+    }
+
+    @media (max-width: 900px) {
+      .desktop-view {
+        display: none;
+      }
+
+      .mobile-view {
+        display: block;
+      }
+
+      .content {
+        padding-top: 10px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .toolbar-title {
+        font-size: 18px;
+      }
+
+      .actions-btn {
+        min-width: 88px;
+      }
+
+      .content {
+        padding: 10px;
+      }
+
+      .steps-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="topo-fixo">
+    <div class="toolbar-title">Controle de Steps – Linha Principal</div>
 
-<h2>Controle de Steps – Linha Principal</h2>
-<a href="index.html">Sub</a>
+    <div class="toolbar-search-actions">
+      <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" />
+      <button class="actions-btn" onclick="openActionsSheet()">Ações</button>
+    </div>
+  </div>
 
-<div class="container" id="content">
-
-    <input type="text" id="employeeName" placeholder="Nome do funcionário">
-    <button onclick="addEmployee()">Adicionar</button>
-
-    <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" onkeyup="renderTable()">
-
-    <button onclick="exportJSON()">Exportar Backup</button>
-    <input type="file" accept=".json" onchange="importJSON(event)">
-
-    <button onclick="exportPDF()">Salvar em PDF</button>
-
-    <div class="legend">
-        <span><span class="skill red"></span> Não sabe</span>
-        <span><span class="skill yellow"></span> Em treinamento</span>
-        <span><span class="skill green"></span> Autônomo</span>
-        <span><span class="skill blue"></span> Padrinho</span>
+  <div class="content" id="content">
+    <!-- DESKTOP -->
+    <div class="desktop-view">
+      <div class="table-wrapper">
+        <table id="skillTable">
+          <thead>
+            <tr>
+              <th>Funcionário</th>
+              <th>Step 1</th>
+              <th>Step 2</th>
+              <th>Step 3</th>
+              <th>Step 4</th>
+              <th>Step 5</th>
+              <th>Step 6</th>
+              <th class="sticky-action">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
     </div>
 
-<div class="table-wrapper">
-    <table id="skillTable">
-        <thead>
-            <tr>
-                <th>Funcionário</th>
-                <th>Step 1</th>
-                <th>Step 2</th>
-                <th>Step 3</th>
-                <th>Step 4</th>
-                <th>Step 5</th>
-                <th>Step 6</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-</div>
+    <!-- MOBILE -->
+    <div class="mobile-view">
+      <div id="mobileList" class="cards"></div>
+    </div>
+  </div>
 
-</div>
+  <!-- MODAL DE NÍVEL -->
+  <div id="levelModal" class="modal-overlay" onclick="closeLevelPicker(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title" id="modalTitle">Selecionar nível</div>
+      <div class="modal-subtitle" id="modalSubtitle">Escolha o nível do step</div>
 
-<script>
-const colors = ["red", "yellow", "green", "blue"];
-const STORAGE_KEY = "steps_secao";
+      <div class="level-options" id="levelOptions"></div>
 
-let employees = [];
+      <div class="modal-footer">
+        <button class="close-btn" onclick="forceCloseLevelPicker()">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
-try {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    employees = Array.isArray(data) ? data : [];
-} catch {
-    employees = [];
-}
+  <!-- MODAL DE AÇÕES -->
+  <div id="actionsSheet" class="modal-overlay" onclick="closeActionsSheet(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title">Ações</div>
+      <div class="modal-subtitle">Adicionar funcionário, importar/exportar e acessar outras opções</div>
 
-function normalizeEmployee(emp) {
-    return {
-        name: emp?.name || "",
-        steps: Array.isArray(emp?.steps)
-            ? [...emp.steps, 0, 0, 0, 0, 0].slice(0, 6)
-            : Array(6).fill(0)
-    };
-}
+      <div class="actions-sheet-content">
+        <div class="sheet-section">
+          <div class="sheet-section-title">Adicionar funcionário</div>
+          <div style="display:grid; gap:8px;">
+            <input type="text" id="employeeName" placeholder="Nome do funcionário" />
+            <button class="btn-primary" onclick="addEmployee()">Adicionar</button>
+          </div>
+        </div>
 
-function saveStorage() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(employees));
-}
+        <div class="sheet-section">
+          <div class="sheet-section-title">Arquivos</div>
+          <div style="display:grid; gap:8px;">
+            <button onclick="exportJSON()">Exportar Backup</button>
+            <label style="display:flex;align-items:center;">
+              <input type="file" accept=".json" onchange="importJSON(event)" style="padding:8px;" />
+            </label>
+            <button onclick="exportPDF()">Salvar em PDF</button>
+          </div>
+        </div>
 
-function renderTable() {
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML = "";
+        <div class="sheet-section">
+          <div class="sheet-section-title">Navegação</div>
+          <div style="display:grid; gap:8px;">
+            <a class="nav-link" href="index.html">Sub</a>
+            <button onclick="clearSearch()">Limpar pesquisa</button>
+          </div>
+        </div>
 
-    const search = document.getElementById("searchEmployee").value.toLowerCase();
+        <div class="sheet-section">
+          <div class="sheet-section-title">Legenda</div>
+          <div class="legend">
+            <div class="legend-item"><span class="legend-dot red"></span> Não sabe</div>
+            <div class="legend-item"><span class="legend-dot yellow"></span> Em treinamento</div>
+            <div class="legend-item"><span class="legend-dot green"></span> Autônomo</div>
+            <div class="legend-item"><span class="legend-dot blue"></span> Padrinho</div>
+          </div>
+        </div>
+      </div>
 
-    employees = employees.map(normalizeEmployee);
+      <div class="modal-footer">
+        <button class="close-btn" onclick="forceCloseActionsSheet()">Fechar</button>
+      </div>
+    </div>
+  </div>
 
-    employees
-        .filter(e => e.name.toLowerCase().includes(search))
-        .forEach((emp, empIndex) => {
+  <script>
+    const STEP_LABELS = ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5", "Step 6"];
+    const STORAGE_KEY = "steps_secao";
 
-            const tr = document.createElement("tr");
+    const LEVELS = [
+      { className: "red", text: "Não sabe" },
+      { className: "yellow", text: "Em treinamento" },
+      { className: "green", text: "Autônomo" },
+      { className: "blue", text: "Padrinho" }
+    ];
 
-            const tdName = document.createElement("td");
-            tdName.textContent = emp.name;
-            tdName.className = "func-name";
-            tr.appendChild(tdName);
+    const employeeNameInput = document.getElementById("employeeName");
+    const searchInput = document.getElementById("searchEmployee");
+    const tableBody = document.getElementById("tableBody");
+    const mobileList = document.getElementById("mobileList");
 
-            emp.steps.forEach((_, stepIndex) => {
-                const td = document.createElement("td");
-                const div = document.createElement("div");
+    const levelModal = document.getElementById("levelModal");
+    const levelOptions = document.getElementById("levelOptions");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalSubtitle = document.getElementById("modalSubtitle");
 
-                const level = emp.steps[stepIndex] ?? 0;
-                div.className = "skill " + (colors[level] || "red");
+    const actionsSheet = document.getElementById("actionsSheet");
 
-                div.onclick = () => {
-                    emp.steps[stepIndex] = (emp.steps[stepIndex] + 1) % colors.length;
-                    saveStorage();
-                    renderTable();
-                };
+    let selectedStep = null;
+    let employees = [];
 
-                td.appendChild(div);
-                tr.appendChild(td);
-            });
-
-            const tdDel = document.createElement("td");
-            const btn = document.createElement("button");
-            btn.textContent = "X";
-            btn.className = "delete-btn";
-
-            btn.onclick = () => {
-                employees.splice(empIndex, 1);
-                saveStorage();
-                renderTable();
-            };
-
-            tdDel.appendChild(btn);
-            tr.appendChild(tdDel);
-
-            tbody.appendChild(tr);
-        });
-}
-
-function addEmployee() {
-    const input = document.getElementById("employeeName");
-    const name = input.value.trim();
-    if (!name) return;
-
-    employees.push({
-        name,
-        steps: Array(6).fill(0)
-    });
-
-    input.value = "";
-    saveStorage();
-    renderTable();
-}
-
-function exportJSON() {
-    const blob = new Blob(
-        [JSON.stringify(employees, null, 2)],
-        { type: "application/json" }
-    );
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "steps_secao_backup.json";
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-function importJSON(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = e => {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (!Array.isArray(data)) throw "inválido";
-
-            employees = data.map(normalizeEmployee);
-            saveStorage();
-            renderTable();
-
-            alert("Backup carregado com sucesso!");
-        } catch {
-            alert("Arquivo JSON inválido");
-        }
-    };
-    reader.readAsText(file);
-}
-
-function exportPDF() {
-    if (typeof html2pdf === "undefined") {
-        alert("Biblioteca PDF não carregada.");
-        return;
+    try {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      employees = Array.isArray(data) ? data.map(normalizeEmployee) : [];
+    } catch {
+      employees = [];
     }
 
-    html2pdf()
+    function normalizeEmployee(emp) {
+      return {
+        name: emp?.name || "",
+        steps: Array.isArray(emp?.steps)
+          ? emp.steps
+              .map(v => {
+                const n = Number(v);
+                return Number.isInteger(n) && n >= 0 && n <= 3 ? n : 0;
+              })
+              .concat([0, 0, 0, 0, 0, 0])
+              .slice(0, 6)
+          : Array(6).fill(0)
+      };
+    }
+
+    function saveStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(employees));
+    }
+
+    function getSearchValue() {
+      return (searchInput?.value || "").trim().toLowerCase();
+    }
+
+    function clearSearch() {
+      if (searchInput) searchInput.value = "";
+      renderAll();
+    }
+
+    function addEmployee() {
+      const name = employeeNameInput.value.trim();
+      if (!name) return;
+
+      employees.push({
+        name,
+        steps: Array(6).fill(0)
+      });
+
+      employeeNameInput.value = "";
+      saveStorage();
+      renderAll();
+      forceCloseActionsSheet();
+    }
+
+    function getFilteredEmployees() {
+      const search = getSearchValue();
+
+      return employees
+        .map((emp, index) => ({ emp: normalizeEmployee(emp), index }))
+        .filter(item => item.emp.name.toLowerCase().includes(search));
+    }
+
+    function getLevelData(level) {
+      return LEVELS[level] || LEVELS[0];
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+
+      const filtered = getFilteredEmployees();
+
+      filtered.forEach(({ emp, index: employeeIndex }) => {
+        const tr = document.createElement("tr");
+
+        const tdName = document.createElement("td");
+        tdName.textContent = emp.name;
+        tdName.className = "func-name";
+        tr.appendChild(tdName);
+
+        emp.steps.forEach((level, stepIndex) => {
+          const td = document.createElement("td");
+          const btn = document.createElement("button");
+          const levelData = getLevelData(level);
+
+          btn.className = `skill-circle ${levelData.className}`;
+          btn.textContent = level;
+          btn.title = `${STEP_LABELS[stepIndex]} - ${levelData.text}`;
+          btn.onclick = () => openLevelPicker(employeeIndex, stepIndex);
+
+          td.appendChild(btn);
+          tr.appendChild(td);
+        });
+
+        const tdDel = document.createElement("td");
+        tdDel.className = "sticky-action";
+
+        const btn = document.createElement("button");
+        btn.textContent = "Excluir";
+        btn.className = "btn-danger";
+
+        btn.onclick = () => {
+          if (confirm(`Deseja excluir ${emp.name}?`)) {
+            employees.splice(employeeIndex, 1);
+            saveStorage();
+            renderAll();
+          }
+        };
+
+        tdDel.appendChild(btn);
+        tr.appendChild(tdDel);
+
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function renderMobileCards() {
+      mobileList.innerHTML = "";
+
+      const filtered = getFilteredEmployees();
+
+      if (filtered.length === 0) {
+        mobileList.innerHTML = `
+          <div class="employee-card">
+            <div class="employee-name">Nenhum funcionário encontrado.</div>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(({ emp, index: employeeIndex }) => {
+        const card = document.createElement("div");
+        card.className = "employee-card";
+
+        card.innerHTML = `
+          <div class="employee-header">
+            <div>
+              <div class="employee-name">${escapeHtml(emp.name)}</div>
+              <div class="small-muted">Toque em um step para alterar o nível</div>
+            </div>
+            <button class="btn-danger" style="width:auto;" onclick="deleteEmployee(${employeeIndex})">Excluir</button>
+          </div>
+        `;
+
+        const stepsBlock = document.createElement("div");
+        stepsBlock.className = "steps-block";
+
+        const title = document.createElement("div");
+        title.className = "steps-title";
+        title.textContent = "Steps";
+        stepsBlock.appendChild(title);
+
+        const grid = document.createElement("div");
+        grid.className = "steps-grid";
+
+        emp.steps.forEach((level, stepIndex) => {
+          const levelData = getLevelData(level);
+
+          const tile = document.createElement("button");
+          tile.className = `step-tile ${levelData.className}`;
+          tile.innerHTML = `
+            <div class="step-code">${STEP_LABELS[stepIndex]}</div>
+            <div class="step-level-text">${levelData.text}</div>
+          `;
+          tile.onclick = () => openLevelPicker(employeeIndex, stepIndex);
+
+          grid.appendChild(tile);
+        });
+
+        stepsBlock.appendChild(grid);
+        card.appendChild(stepsBlock);
+
+        mobileList.appendChild(card);
+      });
+    }
+
+    function deleteEmployee(employeeIndex) {
+      const emp = employees[employeeIndex];
+      if (!emp) return;
+
+      if (confirm(`Deseja excluir ${emp.name}?`)) {
+        employees.splice(employeeIndex, 1);
+        saveStorage();
+        renderAll();
+      }
+    }
+
+    function openLevelPicker(employeeIndex, stepIndex) {
+      selectedStep = { employeeIndex, stepIndex };
+
+      const employee = employees[employeeIndex];
+      if (!employee) return;
+
+      modalTitle.textContent = `${employee.name} • ${STEP_LABELS[stepIndex]}`;
+      modalSubtitle.textContent = "Escolha o novo nível do step";
+
+      levelOptions.innerHTML = "";
+
+      LEVELS.forEach((level, idx) => {
+        const btn = document.createElement("button");
+        btn.className = `level-option ${level.className}`;
+        btn.textContent = level.text;
+        btn.onclick = () => setStepLevel(idx);
+        levelOptions.appendChild(btn);
+      });
+
+      levelModal.classList.add("show");
+    }
+
+    function setStepLevel(level) {
+      if (!selectedStep) return;
+
+      const { employeeIndex, stepIndex } = selectedStep;
+      if (!employees[employeeIndex]) return;
+
+      employees[employeeIndex] = normalizeEmployee(employees[employeeIndex]);
+      employees[employeeIndex].steps[stepIndex] = level;
+
+      saveStorage();
+      renderAll();
+      forceCloseLevelPicker();
+    }
+
+    function closeLevelPicker(event) {
+      if (event.target === levelModal) {
+        forceCloseLevelPicker();
+      }
+    }
+
+    function forceCloseLevelPicker() {
+      selectedStep = null;
+      levelModal.classList.remove("show");
+    }
+
+    function openActionsSheet() {
+      actionsSheet.classList.add("show");
+    }
+
+    function closeActionsSheet(event) {
+      if (event.target === actionsSheet) {
+        forceCloseActionsSheet();
+      }
+    }
+
+    function forceCloseActionsSheet() {
+      actionsSheet.classList.remove("show");
+    }
+
+    function exportJSON() {
+      const blob = new Blob(
+        [JSON.stringify(employees.map(normalizeEmployee), null, 2)],
+        { type: "application/json" }
+      );
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "steps_secao_backup.json";
+      a.click();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!Array.isArray(data)) throw new Error("inválido");
+
+          employees = data.map(normalizeEmployee);
+          saveStorage();
+          renderAll();
+
+          alert("Backup carregado com sucesso!");
+          forceCloseActionsSheet();
+        } catch {
+          alert("Arquivo JSON inválido");
+        } finally {
+          event.target.value = "";
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    function exportPDF() {
+      if (typeof html2pdf === "undefined") {
+        alert("Biblioteca PDF não carregada.");
+        return;
+      }
+
+      const container = document.createElement("div");
+      container.innerHTML = `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2 style="text-align:center; margin-bottom:20px;">Controle de Steps – Linha Principal</h2>
+          ${buildPdfTable()}
+        </div>
+      `;
+
+      html2pdf()
         .set({
-            margin: 5,
-            filename: "controle_steps.pdf",
-            html2canvas: { scale: 1.5 },
-            jsPDF: { orientation: "landscape", unit: "mm", format: "a4" }
+          margin: 5,
+          filename: "controle_steps.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { orientation: "landscape", unit: "mm", format: "a4" }
         })
-        .from(document.getElementById("content"))
+        .from(container)
         .save();
-}
+    }
 
-saveStorage();
-renderTable();
-</script>
+    function buildPdfTable() {
+      let html = `
+        <table style="width:100%; border-collapse:collapse; font-size:10px;">
+          <thead>
+            <tr>
+              <th style="border:1px solid #ccc; padding:6px; background:#eee;">Funcionário</th>
+      `;
 
+      STEP_LABELS.forEach(step => {
+        html += `<th style="border:1px solid #ccc; padding:6px; background:#eee;">${step}</th>`;
+      });
+
+      html += `
+              <th style="border:1px solid #ccc; padding:6px; background:#eee;">Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      employees.map(normalizeEmployee).forEach(emp => {
+        html += `<tr>`;
+        html += `<td style="border:1px solid #ccc; padding:6px;">${escapeHtml(emp.name)}</td>`;
+
+        emp.steps.forEach(level => {
+          html += `
+            <td style="border:1px solid #ccc; padding:6px; text-align:center;">
+              <span style="
+                display:inline-block;
+                width:16px;
+                height:16px;
+                border-radius:50%;
+                background:${getPdfColor(level)};
+                border:1px solid #555;
+              "></span>
+            </td>
+          `;
+        });
+
+        html += `<td style="border:1px solid #ccc; padding:6px;">-</td>`;
+        html += `</tr>`;
+      });
+
+      html += `</tbody></table>`;
+      return html;
+    }
+
+    function getPdfColor(level) {
+      return ["#e74c3c", "#f1c40f", "#2ecc71", "#3498db"][level] || "#e74c3c";
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderAll() {
+      employees = employees.map(normalizeEmployee);
+      saveStorage();
+      renderTable();
+      renderMobileCards();
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", renderAll);
+    }
+
+    if (employeeNameInput) {
+      employeeNameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") addEmployee();
+      });
+    }
+
+    renderAll();
+  </script>
 </body>
 </html>
