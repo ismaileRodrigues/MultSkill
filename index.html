@@ -450,7 +450,7 @@
 <body>
   <div class="topo-fixo">
     <div class="unified-toolbar">
-      <div class="toolbar-title">Multiskill Sub</div>
+      <div class="toolbar-title">Matriz 3x3 Sub</div>
 
       <div class="toolbar-search-actions">
         <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" />
@@ -720,69 +720,72 @@
     }
 
     function renderMobileCards() {
-      const filtered = getFilteredEmployees();
-      mobileList.innerHTML = "";
+  const filtered = getFilteredEmployees();
+  mobileList.innerHTML = "";
 
-      if (filtered.length === 0) {
-        mobileList.innerHTML = `
-          <div class="employee-card">
-            <div class="employee-name">Nenhum funcionário encontrado.</div>
-          </div>
+  if (filtered.length === 0) {
+    mobileList.innerHTML = `
+      <div class="employee-card">
+        <div class="employee-name">Nenhum funcionário encontrado.</div>
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach(({ emp, index: employeeIndex }) => {
+    const card = document.createElement("div");
+    card.className = "employee-card";
+
+    card.innerHTML = `
+      <div class="employee-header">
+        <div>
+          <div class="employee-name">${escapeHtml(emp.name)}</div>
+          <div class="small-muted">Toque em uma skill para alterar o nível</div>
+        </div>
+        <button class="btn-danger" style="width:auto;" onclick="deleteEmployee(${employeeIndex})">Excluir</button>
+      </div>
+    `;
+
+    let currentIndex = 0;
+
+    SKILL_GROUPS.forEach(group => {
+      const groupBlock = document.createElement("div");
+      groupBlock.className = "group-block";
+
+      const title = document.createElement("div");
+      title.className = "group-title";
+      title.textContent = group.name;
+      groupBlock.appendChild(title);
+
+      const grid = document.createElement("div");
+      grid.className = "skills-grid";
+
+      group.items.forEach(item => {
+        const skillLevel = emp.skills[currentIndex];
+        const levelData = getLevelData(skillLevel);
+
+        const tile = document.createElement("button");
+        tile.className = `skill-tile ${levelData.className}`;
+        tile.innerHTML = `
+          <div class="skill-code">${item}</div>
+          <div class="skill-level-text">${levelData.text}</div>
         `;
-        return;
-      }
+        
+        // Mantém o índice correto travado para esta iteração específica
+        const currentSkillIndex = currentIndex;
+        tile.onclick = () => openLevelPicker(employeeIndex, currentSkillIndex);
 
-      filtered.forEach(({ emp, index: employeeIndex }) => {
-        const card = document.createElement("div");
-        card.className = "employee-card";
-
-        card.innerHTML = `
-          <div class="employee-header">
-            <div>
-              <div class="employee-name">${escapeHtml(emp.name)}</div>
-              <div class="small-muted">Toque em uma skill para alterar o nível</div>
-            </div>
-            <button class="btn-danger" style="width:auto;" onclick="deleteEmployee(${employeeIndex})">Excluir</button>
-          </div>
-        `;
-
-        let currentIndex = 0;
-
-        SKILL_GROUPS.forEach(group => {
-          const groupBlock = document.createElement("div");
-          groupBlock.className = "group-block";
-
-          const title = document.createElement("div");
-          title.className = "group-title";
-          title.textContent = group.name;
-          groupBlock.appendChild(title);
-
-          const grid = document.createElement("div");
-          grid.className = "skills-grid";
-
-          group.items.forEach(item => {
-            const skillLevel = emp.skills[currentIndex];
-            const levelData = getLevelData(skillLevel);
-
-            const tile = document.createElement("button");
-            tile.className = `skill-tile ${levelData.className}`;
-            tile.innerHTML = `
-              <div class="skill-code">${item}</div>
-              <div class="skill-level-text">${levelData.text}</div>
-            `;
-            tile.onclick = () => openLevelPicker(employeeIndex, currentIndex);
-
-            grid.appendChild(tile);
-            currentIndex++;
-          });
-
-          groupBlock.appendChild(grid);
-          card.appendChild(groupBlock);
-        });
-
-        mobileList.appendChild(card);
+        grid.appendChild(tile);
+        currentIndex++;
       });
-    }
+
+      groupBlock.appendChild(grid);
+      card.appendChild(groupBlock);
+    });
+
+    mobileList.appendChild(card);
+  });
+}
 
     function deleteEmployee(employeeIndex) {
       const emp = employees[employeeIndex];
@@ -808,10 +811,11 @@
     }
 
     function openLevelPicker(employeeIndex, skillIndex) {
-      selectedSkill = { employeeIndex, skillIndex };
+      
+     selectedSkill = { employeeIndex, skillIndex };
 
-      const employee = employees[employeeIndex];
-      if (!employee) return;
+  const employee = employees[employeeIndex];
+  if (!employee) return;
 
       modalTitle.textContent = `${employee.name} • ${SKILL_LABELS[skillIndex]}`;
       modalSubtitle.textContent = "Escolha o novo nível da skill";
@@ -827,19 +831,23 @@
       });
 
       levelModal.classList.add("show");
+      
     }
 
     function setSkillLevel(level) {
-      if (!selectedSkill) return;
+  if (!selectedSkill) return;
 
-      const { employeeIndex, skillIndex } = selectedSkill;
-      if (!employees[employeeIndex]) return;
-
-      employees[employeeIndex].skills[skillIndex] = level;
-      save();
-      renderAll();
-      forceCloseLevelPicker();
-    }
+  const { employeeIndex, skillIndex } = selectedSkill;
+  
+  // Verifica se o funcionário existe no array global
+  if (employees[employeeIndex]) {
+    employees[employeeIndex].skills[skillIndex] = level;
+    
+    save();
+    renderAll();
+    forceCloseLevelPicker();
+  }
+}
 
     function closeLevelPicker(event) {
       if (event.target === levelModal) {
