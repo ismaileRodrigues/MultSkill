@@ -269,6 +269,8 @@
       align-items: center;
       gap: 4px;
       text-align: center;
+      touch-action: manipulation; /* Melhora a resposta ao toque em mobile */
+  -webkit-tap-highlight-color: transparent;
     }
 
     .step-code {
@@ -437,7 +439,7 @@
 </head>
 <body>
   <div class="topo-fixo">
-    <div class="toolbar-title">Controle de Steps – Linha Principal</div>
+    <div class="toolbar-title">Matrix 3x3 Linha</div>
 
     <div class="toolbar-search-actions">
       <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" />
@@ -769,18 +771,24 @@
     }
 
     function setStepLevel(level) {
-      if (!selectedStep) return;
+  if (!selectedStep) return;
 
-      const { employeeIndex, stepIndex } = selectedStep;
-      if (!employees[employeeIndex]) return;
+  const { employeeIndex, stepIndex } = selectedStep;
+  
+  // Acessa o funcionário diretamente pelo índice original que guardamos
+  if (!employees[employeeIndex]) return;
 
-      employees[employeeIndex] = normalizeEmployee(employees[employeeIndex]);
-      employees[employeeIndex].steps[stepIndex] = level;
+  // Atualiza apenas o nível do step específico
+  employees[employeeIndex].steps[stepIndex] = level;
 
-      saveStorage();
-      renderAll();
-      forceCloseLevelPicker();
-    }
+  saveStorage();
+  
+  // Fecha o modal antes de re-renderizar para evitar conflitos
+  forceCloseLevelPicker();
+  
+  // Re-renderiza a tela mantendo o filtro atual
+  renderAll();
+}
 
     function closeLevelPicker(event) {
       if (event.target === levelModal) {
