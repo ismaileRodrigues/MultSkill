@@ -445,6 +445,16 @@
       <input type="text" id="searchEmployee" placeholder="Pesquisar funcionário" />
       <button class="actions-btn" onclick="openActionsSheet()">Ações</button>
     </div>
+    <div class="sheet-section">
+          <div class="sheet-section-title">Legenda</div>
+          <div class="legend">
+            <div class="legend-item"><span class="legend-dot red"></span> Não sabe</div>
+            <div class="legend-item"><span class="legend-dot yellow"></span> Em treinamento</div>
+            <div class="legend-item"><span class="legend-dot green"></span> Autônomo</div>
+            <div class="legend-item"><span class="legend-dot blue"></span> Padrinho</div>
+          </div>
+        </div>
+      </div>
   </div>
 
   <div class="content" id="content">
@@ -523,16 +533,7 @@
           </div>
         </div>
 
-        <div class="sheet-section">
-          <div class="sheet-section-title">Legenda</div>
-          <div class="legend">
-            <div class="legend-item"><span class="legend-dot red"></span> Não sabe</div>
-            <div class="legend-item"><span class="legend-dot yellow"></span> Em treinamento</div>
-            <div class="legend-item"><span class="legend-dot green"></span> Autônomo</div>
-            <div class="legend-item"><span class="legend-dot blue"></span> Padrinho</div>
-          </div>
-        </div>
-      </div>
+        
 
       <div class="modal-footer">
         <button class="close-btn" onclick="forceCloseActionsSheet()">Fechar</button>
