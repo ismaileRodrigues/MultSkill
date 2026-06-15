@@ -205,7 +205,7 @@
 
     /* MOBILE CARDS */
     .mobile-view {
-      display: none;
+      display: block;
     }
 
     .cards {
@@ -410,7 +410,7 @@
       }
 
       .mobile-view {
-        display: block;
+        display: none;
       }
 
       .content {
@@ -946,7 +946,7 @@
     function renderAll() {
       employees = employees.map(normalizeEmployee);
       saveStorage();
-      renderTable();
+      // renderTable();
       renderMobileCards();
     }
 
